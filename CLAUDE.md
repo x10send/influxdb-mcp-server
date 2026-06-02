@@ -18,6 +18,10 @@ influxdb-mcp-server/
 └── unraid/influxdb-mcp-server.xml  # Community Apps template
 ```
 
+## Versioning Convention
+
+Tags follow `vX.Y.Z-N` where `X.Y.Z` is the upstream `influxdb-mcp-server` npm version and `N` is the packaging iteration (starting at 1). Example: `v0.2.0-1` means npm `0.2.0`, first packaging release. Bump `N` for Dockerfile or workflow fixes without an upstream npm change. Published Docker tags: `0.2.0-1` (full) and `latest`.
+
 ## Build & Lint Commands
 
 ```bash

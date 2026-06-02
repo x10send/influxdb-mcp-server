@@ -3,7 +3,7 @@ name: Release
 on:
   push:
     tags:
-      - 'v*.*.*'
+      - 'v*.*.*-*'
 
 permissions:
   contents: read
@@ -37,9 +37,7 @@ jobs:
         with:
           images: ghcr.io/x10send/influxdb-mcp-server
           tags: |
-            type=semver,pattern={{version}}
-            type=semver,pattern={{major}}.{{minor}}
-            type=semver,pattern={{major}}
+            type=match,pattern=v(\d+\.\d+\.\d+-\d+),group=1
             type=raw,value=latest
 
       - name: Build and push

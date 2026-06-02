@@ -31,10 +31,50 @@ The MCP server will be available at `http://localhost:3002`.
 ### Via Docker UI (Add Container)
 
 1. In Unraid, go to **Docker → Add Container**
-2. Set **Repository** to `ghcr.io/x10send/influxdb-mcp-server:latest`
-3. Add a port mapping: container `3000` → host `3002` (or any open port)
-4. Add the three environment variables above
+2. Set **Name** to `influxdb-mcp-server`
+3. Set **Repository** to `ghcr.io/x10send/influxdb-mcp-server:latest`
+4. Click **Add another Path, Port, Variable, Label or Device** and add the following port and variables:
+
+**Port:**
+
+| Field | Value |
+|---|---|
+| Config Type | Port |
+| Name | MCP HTTP Port |
+| Container Port | `3000` |
+| Host Port | `3002` (or any open port on your server) |
+| Protocol | TCP |
+
+**Variable 1:**
+
+| Field | Value |
+|---|---|
+| Config Type | Variable |
+| Name | `INFLUXDB_TOKEN` |
+| Key | `INFLUXDB_TOKEN` |
+| Value | Your InfluxDB API token (find it under **Load Data → API Tokens** in the InfluxDB UI) |
+
+**Variable 2:**
+
+| Field | Value |
+|---|---|
+| Config Type | Variable |
+| Name | `INFLUXDB_URL` |
+| Key | `INFLUXDB_URL` |
+| Value | `http://<your-unraid-ip>:8086` |
+
+**Variable 3:**
+
+| Field | Value |
+|---|---|
+| Config Type | Variable |
+| Name | `INFLUXDB_ORG` |
+| Key | `INFLUXDB_ORG` |
+| Value | Your InfluxDB organization name (shown in the top-left dropdown of the InfluxDB UI) |
+
 5. Click **Apply**
+
+The MCP endpoint will be available at `http://<your-unraid-ip>:<host-port>/mcp`.
 
 ### Via Community Apps
 
@@ -65,29 +105,39 @@ INFLUXDB_ORG=your-org
 
 ## Wiring into mcp-edge-gateway
 
-Add an `/influxdb` route to your `gateway.yaml`:
+Add an `/influxdb` route to your `gateway.yaml`, pointing at the `/mcp` endpoint:
 
 ```yaml
 routes:
   - path: /influxdb
-    upstream: http://<unraid-host-ip>:3002
+    upstream: http://<unraid-host-ip>:3002/mcp
 ```
 
-The gateway forwards MCP requests to this container and handles authentication for external clients.
+### Tool Access
 
-### Write Tool Denylist
+This server exposes four tools: `query-data`, `write-data`, `create-bucket`, and `create-org`.
 
-By default, `mcp-edge-gateway` may deny write tools (`write`, `delete`, etc.) for safety. To allow writes through the `/influxdb` route, add an explicit allowlist in your `gateway.yaml`:
+With `defaultDenyDangerousTools: true` (the default), `write-data` is already blocked. You should explicitly deny the two create tools as well:
 
 ```yaml
-routes:
-  - path: /influxdb
-    upstream: http://<unraid-host-ip>:3002
-    allow_tools:
-      - "*"   # allow all tools including writes
+tools:
+  defaultDenyDangerousTools: true
+  deny:
+    - create-bucket
+    - create-org
 ```
 
-Or allowlist specific write tools while keeping others blocked.
+To also allow `write-data` (e.g. for logging or annotating data from Claude):
+
+```yaml
+tools:
+  defaultDenyDangerousTools: true
+  allow:
+    - write-data
+  deny:
+    - create-bucket
+    - create-org
+```
 
 ## Image Details
 

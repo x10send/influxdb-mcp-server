@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<Container version="2">
+  <Name>influxdb-mcp-server</Name>
+  <Repository>ghcr.io/x10send/influxdb-mcp-server:latest</Repository>
+  <Registry>https://ghcr.io/x10send/influxdb-mcp-server</Registry>
+  <Network>bridge</Network>
+  <Shell>sh</Shell>
+  <Privileged>false</Privileged>
+  <Support>https://github.com/x10send/influxdb-mcp-server/issues</Support>
+  <Project>https://github.com/x10send/influxdb-mcp-server</Project>
+  <Overview>MCP (Model Context Protocol) server for InfluxDB v2 OSS. Exposes InfluxDB query and management tools over Streamable HTTP so AI assistants (Claude, etc.) can interact with your InfluxDB instance. Designed to sit behind mcp-edge-gateway for authentication.</Overview>
+  <Category>Tools:</Category>
+  <WebUI/>
+  <TemplateURL>https://raw.githubusercontent.com/x10send/influxdb-mcp-server/main/unraid/influxdb-mcp-server.xml</TemplateURL>
+  <Icon/>
+  <ExtraParams/>
+  <PostArgs/>
+  <CPUset/>
+  <DateInstalled/>
+  <DonateText/>
+  <DonateLink/>
+  <Requires/>
+  <Config Name="MCP HTTP Port" Target="3000" Default="3002" Mode="tcp" Description="Host port to expose the MCP server on. Map this in your mcp-edge-gateway upstream URL." Type="Port" Display="always" Required="true" Mask="false">3002</Config>
+  <Config Name="InfluxDB Token" Target="INFLUXDB_TOKEN" Default="" Mode="" Description="InfluxDB all-access or scoped API token. Find this in your InfluxDB UI under Load Data > API Tokens." Type="Variable" Display="always" Required="true" Mask="true"></Config>
+  <Config Name="InfluxDB URL" Target="INFLUXDB_URL" Default="http://192.168.1.x:8086" Mode="" Description="Base URL of your InfluxDB instance, including protocol and port." Type="Variable" Display="always" Required="true" Mask="false">http://192.168.1.x:8086</Config>
+  <Config Name="InfluxDB Org" Target="INFLUXDB_ORG" Default="" Mode="" Description="InfluxDB organization name (found in your InfluxDB UI)." Type="Variable" Display="always" Required="true" Mask="false"></Config>
+</Container>

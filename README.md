@@ -105,38 +105,39 @@ INFLUXDB_ORG=your-org
 
 ## Wiring into mcp-edge-gateway
 
-Add an `/influxdb` route to your `gateway.yaml`, pointing at the `/mcp` endpoint:
+Add an `/influxdb` route to your `gateway.yaml` (the gateway appends `/mcp` to the upstream automatically):
 
 ```yaml
 routes:
   - path: /influxdb
-    upstream: http://<unraid-host-ip>:3002/mcp
+    upstream: http://<unraid-host-ip>:3002
 ```
 
 ### Tool Access
 
 This server exposes four tools: `query-data`, `write-data`, `create-bucket`, and `create-org`.
 
-With `defaultDenyDangerousTools: true` (the default), `write-data` is already blocked. You should explicitly deny the two create tools as well:
+Use a per-route `allowlist` to explicitly control which tools are available. Read-only:
 
 ```yaml
-tools:
-  defaultDenyDangerousTools: true
-  deny:
-    - create-bucket
-    - create-org
+routes:
+  - path: /influxdb
+    upstream: http://<unraid-host-ip>:3002
+    tools:
+      allowlist:
+        - query-data
 ```
 
-To also allow `write-data` (e.g. for logging or annotating data from Claude):
+To also allow writing data (e.g. for Claude to log or annotate measurements):
 
 ```yaml
-tools:
-  defaultDenyDangerousTools: true
-  allow:
-    - write-data
-  deny:
-    - create-bucket
-    - create-org
+routes:
+  - path: /influxdb
+    upstream: http://<unraid-host-ip>:3002
+    tools:
+      allowlist:
+        - query-data
+        - write-data
 ```
 
 ## Image Details
